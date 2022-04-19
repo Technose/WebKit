@@ -1,3 +1,83 @@
+2022-04-19  Zan Dobersek  <zdobersek@igalia.com>
+
+        [GTK][WPE][GPUProcess] Add RemoteGraphicsContextGLGBM, RemoteGraphicsContextGLProxyGBM
+        https://bugs.webkit.org/show_bug.cgi?id=239348
+
+        Reviewed by Carlos Garcia Campos.
+
+        Provide RemoteGraphicsContextGL and RemoteGraphicsContextGLProxy
+        implementations guarded by and based on USE(LIBGBM) functionality,
+        usable by the GTK and WPE ports when jointly enabled with ANGLE
+        backing of WebGL execution.
+
+        RemoteGraphicsContextGLGBM is the GPUProcess-side GL executor.
+        Internally it spawns a GraphicsContextGLGBM instance, and once invoked,
+        the PrepareForDisplay() IPC message returns the reply with the DMABuf
+        object that was used as the rendering backing in that context instance.
+
+        RemoteGraphicsContextGLProxyGBM is the WebProcess-side counterpart.
+        Besides relaying the prepare-for-display request, it also manages the
+        GraphicsLayerContentsDisplayDelegate object which handles presenting
+        DMABuf objects arriving from the GPUProcess. That delegate is of the
+        NicosiaDisplayDelegate type, a slim class also handling a
+        Nicosia::ContentLayer object through which any arriving DMABuf is
+        presented in the TextureMapper tree.
+
+        * GPUProcess/graphics/RemoteGraphicsContextGL.cpp:
+        * GPUProcess/graphics/RemoteGraphicsContextGL.h:
+        * GPUProcess/graphics/RemoteGraphicsContextGL.messages.in:
+        * GPUProcess/graphics/RemoteGraphicsContextGLGBM.cpp: Added.
+        (WebKit::RemoteGraphicsContextGLGBM::RemoteGraphicsContextGLGBM):
+        (WebKit::RemoteGraphicsContextGLGBM::platformWorkQueueInitialize):
+        (WebKit::RemoteGraphicsContextGLGBM::prepareForDisplay):
+        (WebKit::RemoteGraphicsContextGL::create):
+        * SourcesGTK.txt:
+        * SourcesWPE.txt:
+        * WebProcess/GPU/graphics/gbm/RemoteGraphicsContextGLProxyGBM.cpp: Added.
+        (WebKit::NicosiaDisplayDelegate::NicosiaDisplayDelegate):
+        (WebKit::NicosiaDisplayDelegate::~NicosiaDisplayDelegate):
+        (WebKit::NicosiaDisplayDelegate::platformLayer const):
+        (WebKit::NicosiaDisplayDelegate::swapBuffersIfNeeded):
+        (WebKit::RemoteGraphicsContextGLProxyGBM::RemoteGraphicsContextGLProxyGBM):
+        (WebKit::RemoteGraphicsContextGLProxyGBM::layerContentsDisplayDelegate):
+        (WebKit::RemoteGraphicsContextGLProxyGBM::prepareForDisplay):
+        (WebKit::RemoteGraphicsContextGLProxy::create):
+
+2022-04-18  Per Arne Vollan  <pvollan@apple.com>
+
+        Block system calls in the Network process
+        https://bugs.webkit.org/show_bug.cgi?id=238935
+        <rdar://47323426>
+
+        Reviewed by Geoffrey Garen.
+
+        Block unused system calls in the Network process on macOS and iOS. This is based on collected telemetry.
+
+        * NetworkProcess/mac/com.apple.WebKit.NetworkProcess.sb.in:
+        * Resources/SandboxProfiles/ios/com.apple.WebKit.Networking.sb.in:
+
+2022-04-18  Per Arne Vollan  <pvollan@apple.com>
+
+        [iOS][WP] Add telemetry with backtrace for network related system calls
+        https://bugs.webkit.org/show_bug.cgi?id=239465
+
+        Reviewed by Darin Adler.
+
+        * Resources/SandboxProfiles/ios/com.apple.WebKit.WebContent.sb.in:
+
+2022-04-18  Commit Queue  <commit-queue@webkit.org>
+
+        Unreviewed, reverting r292957.
+        https://bugs.webkit.org/show_bug.cgi?id=239468
+
+        Introduced crash
+
+        Reverted changeset:
+
+        "Block system calls in the Network process"
+        https://bugs.webkit.org/show_bug.cgi?id=238935
+        https://commits.webkit.org/r292957
+
 2022-04-18  Brent Fulgham  <bfulgham@apple.com>
 
         Remove the deprecated CaptivePortal enablement key

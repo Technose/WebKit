@@ -657,7 +657,6 @@
             MSC_host_self_trap
             MSC_mach_generate_activity_id
             MSC_mach_msg_trap
-            MSC_mach_msg2_trap
             MSC_mach_reply_port
             MSC_mach_voucher_extract_attr_recipe_trap
             MSC_mk_timer_arm
@@ -671,5 +670,9 @@
             MSC_syscall_thread_switch
             MSC_task_dyld_process_info_notify_get
             MSC_task_self_trap
-            MSC_thread_get_special_reply_port)))
+            MSC_thread_get_special_reply_port))
+            
+    (when (defined? 'MSC_mach_msg2_trap)
+        (allow syscall-mach
+            (machtrap-number MSC_mach_msg2_trap))))
 #endif // HAVE(SANDBOX_MESSAGE_FILTERING)

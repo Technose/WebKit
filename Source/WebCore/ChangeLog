@@ -1,3 +1,170 @@
+2022-04-16  Philippe Normand  <pnormand@igalia.com>
+
+        [GStreamer][WebRTC] Minor cleanup in IncomingSourceGStreamer
+        https://bugs.webkit.org/show_bug.cgi?id=239417
+
+        Reviewed by Xabier Rodriguez-Calvar.
+
+        * platform/mediastream/gstreamer/RealtimeIncomingSourceGStreamer.cpp: Remove un-needed include.
+        (WebCore::RealtimeIncomingSourceGStreamer::registerClient): Minor optimization, create
+        string only for GStreamer builds enabling debug support.
+
+2022-04-19  Philippe Normand  <pnormand@igalia.com>
+
+        [GStreamer] Runtime warning when the player configures the avdec AV1 decoder
+        https://bugs.webkit.org/show_bug.cgi?id=238991
+
+        Reviewed by Xabier Rodriguez-Calvar.
+
+        Not all libav GStreamer decoders have a max-threads property, the AV1 decoder for instance
+        does not. So we need to check the property is present before attempting to set it, in order
+        to avoid runtime warnings.
+
+        * platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp:
+        (WebCore::MediaPlayerPrivateGStreamer::configureVideoDecoder):
+
+2022-04-19  Tim Nguyen  <ntim@apple.com>
+
+        Clean up Element::isFocusableWithoutResolvingFullStyle()
+        https://bugs.webkit.org/show_bug.cgi?id=239028
+
+        Reviewed by Antti Koivisto.
+
+        * dom/Element.cpp:
+        (WebCore::Element::isFocusableWithoutResolvingFullStyle const):
+
+2022-04-18  Zan Dobersek  <zdobersek@igalia.com>
+
+        Remove the PlatformMediaEngineClassName macro
+        https://bugs.webkit.org/show_bug.cgi?id=239384
+
+        Reviewed by Philippe Normand.
+
+        Remove the PlatformMediaEngineClassName macro used in the MediaPlayer
+        implementation file. It's only used for two media engines.
+
+        For GStreamer, the code can be simplified and grouped under a single
+        if-block. For USE_MEDIA_FOUNDATION, the relevant call can similarly be
+        guarded by the corresponding build guards.
+
+        * platform/graphics/MediaPlayer.cpp:
+        (WebCore::WTF_REQUIRES_LOCK):
+
+2022-04-18  Tyler Wilcock  <tyler_w@apple.com>
+
+        AX: Update the isolated tree in response to AXElementBusyChanged and AXTextChanged notifications
+        https://bugs.webkit.org/show_bug.cgi?id=239434
+
+        Reviewed by Chris Fleizach.
+
+        We need to update the isolated tree in response to these notifications.
+
+        This patch also makes AccessibilityNodeObjects (e.g. for display:contents elements)
+        properly report AXCoreObject::isBusy by moving AccessibilityRenderObject's implementation
+        to AccessibilityNodeObject. This also required AccessibilityRenderObject::elementAttributeValue
+        to move as well.
+
+        Tests: accessibility/text-updates-after-dynamic-change.html
+               accessibility/aria-busy-updates-after-dynamic-change.html
+
+        * accessibility/AXObjectCache.cpp:
+        (WebCore::AXObjectCache::updateIsolatedTree):
+        * accessibility/AccessibilityNodeObject.cpp:
+        (WebCore::AccessibilityNodeObject::isBusy const):
+        Moved from AccessibilityRenderObject.
+        (WebCore::AccessibilityNodeObject::elementAttributeValue const):
+        Moved from AccessibilityRenderObject.
+        * accessibility/AccessibilityNodeObject.h:
+        * accessibility/AccessibilityRenderObject.cpp:
+        (WebCore::AccessibilityRenderObject::setElementAttributeValue):
+        Delete this method as it was unused.
+        (WebCore::AccessibilityRenderObject::elementAttributeValue const):
+        Moved to AccessibilityNodeObject.
+        (WebCore::AccessibilityRenderObject::isBusy const):
+        Moved to AccessibilityNodeObject.
+        * accessibility/AccessibilityRenderObject.h:
+
+2022-04-18  Alex Christensen  <achristensen@webkit.org>
+
+        Implement CSSTransformValue.is2D
+        https://bugs.webkit.org/show_bug.cgi?id=239462
+
+        Reviewed by Simon Fraser.
+
+        This is an off-by-default feature.
+        Covered by WPT tests.
+
+        * bindings/js/JSCSSTransformComponentCustom.cpp:
+        (WebCore::toJSNewlyCreated):
+        * css/typedom/CSSNumericValue.cpp:
+        (WebCore::CSSNumericValue::rectifyNumberish):
+        * css/typedom/CSSNumericValue.h:
+        * css/typedom/numeric/CSSNumericType.h:
+        (WebCore::CSSNumericType::valueForType const):
+        (WebCore::CSSNumericType::nonZeroEntryCount const):
+        (WebCore::CSSNumericType::matches const):
+        (WebCore::CSSNumericType::matchesNumber const):
+        * css/typedom/transform/CSSMatrixComponent.cpp:
+        (WebCore::CSSMatrixComponent::create):
+        (WebCore::CSSMatrixComponent::CSSMatrixComponent):
+        * css/typedom/transform/CSSMatrixComponent.h:
+        (WebCore::CSSMatrixComponent::create): Deleted.
+        * css/typedom/transform/CSSMatrixComponent.idl:
+        * css/typedom/transform/CSSRotate.cpp:
+        (WebCore::CSSRotate::create):
+        (WebCore::CSSRotate::CSSRotate):
+        (WebCore::CSSRotate::setX):
+        (WebCore::CSSRotate::setY):
+        (WebCore::CSSRotate::setZ):
+        (WebCore::CSSRotate::setAngle):
+        * css/typedom/transform/CSSRotate.h:
+        (WebCore::CSSRotate::x):
+        (WebCore::CSSRotate::y):
+        (WebCore::CSSRotate::z):
+        (WebCore::CSSRotate::setX): Deleted.
+        (WebCore::CSSRotate::setY): Deleted.
+        (WebCore::CSSRotate::setZ): Deleted.
+        (WebCore::CSSRotate::setAngle): Deleted.
+        * css/typedom/transform/CSSScale.cpp:
+        (WebCore::CSSScale::create):
+        (WebCore::CSSScale::CSSScale):
+        * css/typedom/transform/CSSScale.h:
+        (WebCore::CSSScale::x const):
+        (WebCore::CSSScale::y const):
+        (WebCore::CSSScale::z const):
+        (WebCore::CSSScale::x): Deleted.
+        (WebCore::CSSScale::y): Deleted.
+        (WebCore::CSSScale::z): Deleted.
+        * css/typedom/transform/CSSTransformComponent.cpp:
+        (WebCore::CSSTransformComponent::toString const):
+        (WebCore::CSSTransformComponent::toMatrix): Deleted.
+        * css/typedom/transform/CSSTransformComponent.h:
+        (WebCore::CSSTransformComponent::CSSTransformComponent):
+        (WebCore::CSSTransformComponent::getType const): Deleted.
+        * css/typedom/transform/CSSTransformValue.cpp:
+        (WebCore::CSSTransformValue::create):
+        (WebCore::CSSTransformValue::setItem):
+        (WebCore::CSSTransformValue::is2D const):
+        (WebCore::CSSTransformValue::setIs2D): Deleted.
+        * css/typedom/transform/CSSTransformValue.h:
+        * css/typedom/transform/CSSTranslate.h:
+
+2022-04-18  Chris Dumez  <cdumez@apple.com>
+
+        Use convertToASCIILowercase() less and more SortedArrayMap / SortedArraySet
+        https://bugs.webkit.org/show_bug.cgi?id=239453
+
+        Reviewed by Darin Adler.
+
+        * Modules/applicationmanifest/ApplicationManifestParser.cpp:
+        (WebCore::ApplicationManifestParser::parseDisplay):
+        * platform/graphics/MediaPlayer.cpp:
+        (WebCore::MediaPlayer::supportsType):
+        * platform/graphics/avfoundation/MediaPlayerPrivateAVFoundation.cpp:
+        (WebCore::MediaPlayerPrivateAVFoundation::isUnsupportedMIMEType):
+        * platform/graphics/avfoundation/objc/AVAssetMIMETypeCache.mm:
+        (WebCore::AVAssetMIMETypeCache::isUnsupportedContainerType):
+
 2022-04-18  Matt Woodrow  <mattwoodrow@apple.com>
 
         Implement support for aligning baselines through subgrids
