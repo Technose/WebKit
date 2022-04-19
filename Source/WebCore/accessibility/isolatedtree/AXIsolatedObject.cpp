@@ -38,23 +38,27 @@
 
 namespace WebCore {
 
-AXIsolatedObject::AXIsolatedObject(AXCoreObject& object, AXIsolatedTree* tree, AXID parentID)
+AXIsolatedObject::AXIsolatedObject(AXCoreObject& axObject, AXIsolatedTree* tree)
     : m_cachedTree(tree)
-    , m_parentID(parentID)
-    , m_id(object.objectID())
+    , m_id(axObject.objectID())
 {
     ASSERT(isMainThread());
+    ASSERT(is<AccessibilityObject>(axObject));
+
+    auto* axParent = axObject.parentObjectUnignored();
+    m_parentID = axParent ? axParent->objectID() : AXID();
+
     if (m_id.isValid())
-        initializeAttributeData(object, !parentID.isValid());
+        initializeAttributeData(axObject, !m_parentID.isValid());
     else {
         // Should never happen under normal circumstances.
         ASSERT_NOT_REACHED();
     }
 }
 
-Ref<AXIsolatedObject> AXIsolatedObject::create(AXCoreObject& object, AXIsolatedTree* tree, AXID parentID)
+Ref<AXIsolatedObject> AXIsolatedObject::create(AXCoreObject& object, AXIsolatedTree* tree)
 {
-    return adoptRef(*new AXIsolatedObject(object, tree, parentID));
+    return adoptRef(*new AXIsolatedObject(object, tree));
 }
 
 AXIsolatedObject::~AXIsolatedObject()

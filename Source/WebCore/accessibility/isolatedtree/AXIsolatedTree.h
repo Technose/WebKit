@@ -385,9 +385,6 @@ private:
     static HashMap<AXIsolatedTreeID, Ref<AXIsolatedTree>>& treeIDCache() WTF_REQUIRES_LOCK(s_cacheLock);
     static HashMap<PageIdentifier, Ref<AXIsolatedTree>>& treePageCache() WTF_REQUIRES_LOCK(s_cacheLock);
 
-    // Methods in this block are called on the main thread.
-    // Computes the parent ID of the given object, which is generally the "assumed" parent ID (but not always, like in the case of tables).
-    AXID parentIDForObject(AXCoreObject&, AXID assumedParentID);
     enum class AttachWrapper : bool { OnMainThread, OnAXThread };
     NodeChange nodeChangeForObject(AXCoreObject&, AXID parentID, AttachWrapper = AttachWrapper::OnMainThread);
     void collectNodeChangesForSubtree(AXCoreObject&, AXID parentID);
